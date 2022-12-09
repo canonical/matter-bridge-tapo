@@ -14,10 +14,7 @@
 #    limitations under the License.
 #
 
-# To run, execute the following inside the Python Virtual Env:
-# pip install PyP100
-# IP="" USER="" PASS="" python lighting.py
-
+from threading import Thread, Event
 from chip.server import (
     GetLibraryHandle,
     NativeLibraryHandleMethodArguments,
@@ -26,58 +23,113 @@ from chip.server import (
 
 from chip.exceptions import ChipStackError
 
-
+import json
+import time
+import subprocess
 import os
-import asyncio
-
-from PyP100 import PyL530
-
-dev = None
-color = {}
-switchedOn = None
 
 
-def switch_on():
-    global dev
-    global switchedOn
+from PyP100 import PyL530, PyP100, PyP110
 
-    print("[tapo] switch on")
-    dev.turnOn()
-    switchedOn = True
-
-
-def switch_off():
-    global dev
-    global switchedOn
-
-    print("[tapo] switch off")
-    dev.turnOff()
-    switchedOn = False
+partyOn = None
+partyThread = None
+endpoints = []
+defaults = None
+workDir = os.getenv('WORK_DIR')
 
 
-def set_level(level: int):
-    global dev
-    global switchedOn
+def switch_on(dev: dict):
 
-    # The level setting is stored and resubmitted with every on/off command.
-    # Skip when off or unknown, because setting level turns on the Tapo light.
-    if switchedOn or switchedOn is None:
-        print("[tapo] set brightness level")
-        dev.setBrightness(level)
+    type = dev['type']
+
+    # Initialize level and color on first request
+    if type == 'bulb' and 'set' not in defaults:
+        set_level(dev, defaults['brightness'])
+        set_color(dev, defaults['hue'], defaults['sat'])
+        defaults['set'] = True
+
+    ip = dev['ip']
+    driver = dev['driver']
+
+    print("[tapo] {}@{}: switch on".format(type, ip))
+    driver.turnOn()
 
 
-def set_color(level: dict):
-    global dev
+def switch_off(dev: dict):
 
-    print("[tapo] set color")
-    dev.setColor(level['hue'], level['saturation'])
+    type = dev['type']
+    ip = dev['ip']
+    driver = dev['driver']
+
+    print("[tapo] {}@{}: switch off".format(type, ip))
+    driver.turnOff()
 
 
-def set_color_temperature(kelvin: int):
-    global dev
+def set_level(dev: dict, level: int):
 
-    print("[tapo] set color temperature")
-    dev.setColorTemp(kelvin)
+    type = dev['type']
+    ip = dev['ip']
+    driver = dev['driver']
+
+    print("[tapo] {}@{}: set brightness level: {}".format(type, ip, level))
+    driver.setBrightness(level)
+
+
+def set_color(dev: dict, hue: int, saturation: int):
+
+    type = dev['type']
+    ip = dev['ip']
+    driver = dev['driver']
+
+    print("[tapo] {}@{}: set color: {}, {}".format(type, ip, hue, saturation))
+    driver.setColor(hue, saturation)
+
+
+def party():
+    global partyOn
+    # find the devices
+    plugs, bulbs = [], []
+    party = None
+    for device in endpoints.values():
+        match device['type']:
+            case 'plug':
+                plugs.append(device)
+            case 'bulb':
+                bulbs.append(device)
+            case 'party':
+                party = device
+
+    for d in plugs + bulbs:
+        switch_on(d)
+
+    for b in bulbs:
+        set_level(b, defaults['brightness'])
+
+    # play the music
+    audioFile = party['audioFile']
+    if workDir:
+        audioFile = workDir+audioFile
+    musicProc = subprocess.Popen(["mpg123", audioFile])
+    delay = party['transitionDelay']
+
+    while partyOn:
+        for color in party['colors']:
+            for b in bulbs:
+                set_color(b, color['hue'], color['sat'])
+            time.sleep(delay)
+
+            if not partyOn:  # interrupt the party
+                break
+
+    print("Party is over.")
+    # set the default light color
+    for b in bulbs:
+        set_color(b, defaults['hue'], defaults['sat'])
+    # switch everything off
+    for d in plugs + bulbs:
+        switch_off(d)
+    # stop the music
+    musicProc.terminate()
 
 
 @PostAttributeChangeCallback
@@ -89,45 +141,40 @@ def attributeChangeCallback(
     size: int,
     value: bytes,
 ):
-    if endpoint == 1:
-        print("[callback] cluster={} attr={} value={}".format(
-            clusterId, attributeId, list(value)))
+    print("[callback] endpoint={} cluster={} attr={} value={}".format(
+        endpoint, clusterId, attributeId, list(value)))
+
+    if 1 <= endpoint <= 3:  # Tapo devices
+        dev = endpoints[str(endpoint)]
         # switch
         if clusterId == 6 and attributeId == 0:
             if value and value[0] == 1:
-                print("[callback] light on")
-                switch_on()
+                print("[callback] on")
+                switch_on(dev)
             else:
 
-                print("[callback] light off")
-                switch_off()
-        # level (brightness)
-        elif clusterId == 8 and attributeId == 0:
-            if value:
-                print("[callback] level {}".format(value[0]))
-                set_level(value[0])
-        # color
-        elif clusterId == 768:
-            if value:
-                global color
-                if attributeId == 0:
-                    print("[callback] color hue={}".format(value[0]))
-                    color['hue'] = value[0]
-                elif attributeId == 1:
-                    print("[callback] color saturation={}".format(value[0]))
-                    color['saturation'] = value[0]
-                elif attributeId == 7:
-                    print("[callback] color temperature={}".format(value[0]))
-                    set_color_temperature(value[0])
+                print("[callback] off")
+                switch_off(dev)
 
-                # we need both hue and saturation to set a new color
-                if (attributeId == 0 or attributeId == 1) and 'hue' in color and 'saturation' in color:
-                    print("[callback] color={}".format(color))
-                    set_color(color)
         else:
             print("[callback] Error: unhandled cluster {} or attribute {}".format(
                 clusterId, attributeId))
             pass
+
+    elif endpoint == 4:  # Party mode
+        if clusterId == 6 and attributeId == 0:
+            global partyOn
+            if value and value[0] == 1:
+                global partyThread
+                print("[callback] on")
+                if not partyOn:
+                    partyOn = True
+                    partyThread = Thread(target=party)
+                    partyThread.start()
+            else:
+                print("[callback] off")
+                partyOn = False
+
     else:
         print("[callback] Error: unhandled endpoint {} ".format(endpoint))
 
@@ -138,28 +185,52 @@ class Lighting:
 
 
 if __name__ == "__main__":
+    confFile = open("config.json")
+    conf = json.load(confFile)
+    confFile.close()
+
+    endpoints = conf['endpoints']
+    defaults = conf['defaults']
+
     l = Lighting()
 
     print("Starting Tapo Bridge Lighting App")
 
-    ip = os.environ['IP']
-    user = os.environ['USER']
-    password = os.environ['PASS']
+    user = conf['tplinkUsername']
+    password = conf['tplinkPassword']
+    for id, device in endpoints.items():
+        type = device['type']
+        match type:
+            case 'bulb' | 'plug':
+                ip = device['ip']
+                model = device['model']
+                match model:
+                    case 'L530':
+                        endpoints[id]['driver'] = PyL530.L530(
+                            ip, user, password)
+                    case 'P100/P105':
+                        endpoints[id]['driver'] = PyP100.P100(
+                            ip, user, password)
+                    case 'P110/P115':
+                        endpoints[id]['driver'] = PyP110.P110(
+                            ip, user, password)
+                    case other:
+                        print('ERROR: Unsupported device model:', model)
+                        quit(1)
 
-    dev = PyL530.L530(ip, user, password)
+                driver = endpoints[id]['driver']
+                print("[tapo] {}@{}: handshake".format(type, ip))
+                driver.handshake()
+                print("[tapo] {}@{}: login".format(type, ip))
+                driver.login()
+                print("[tapo] {}@{}: ready ✅".format(type, ip))
+                # print(driver.getDeviceInfo())
+            case 'party':
+                # Nothing to initialize
+                pass
+            case other:
+                print('ERROR: Unknown device type:', type)
+                quit(1)
 
-    print("[tapo] handshake")
-    dev.handshake()
-    print("[tapo] login")
-    dev.login()
-
-    print("[tapo] ready")
-
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        print("Process interrupted")
-    finally:
-        loop.close()
-        print("Shutting down")
+    print('Ready...')
+    Event().wait()

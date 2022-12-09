@@ -1,0 +1,57 @@
+{
+    "tplinkUsername": "email@example.com",
+    "tplinkPassword": "",
+    "defaults": {
+        "brightness": 100,
+        "hue": 100,
+        "sat": 0
+    },
+    "endpoints": {
+        "1": {
+            "type": "bulb",
+            "model": "L530",
+            "ip": "192.168.1.20"
+        },
+        "2": {
+            "type": "bulb",
+            "model": "L530",
+            "ip": "192.168.1.21"
+        },
+        "3": {
+            "type": "plug",
+            "model": "P110/P115",
+            "ip": "192.168.1.30"
+        },
+        "4": {
+            "type": "party",
+            "audioFile": "disco.mp3",
+            "transitionDelay": 1.0,
+            "colors": [
+                {
+                    "hue": 0,
+                    "sat": 100
+                },
+                {
+                    "hue": 60,
+                    "sat": 100
+                },
+                {
+                    "hue": 120,
+                    "sat": 100
+                },
+                {
+                    "hue": 180,
+                    "sat": 100
+                },
+                {
+                    "hue": 240,
+                    "sat": 100
+                },
+                {
+                    "hue": 300,
+                    "sat": 100
+                }
+            ]
+        }
+    }
+}
