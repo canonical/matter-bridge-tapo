@@ -16,6 +16,8 @@ snap install --dangerous --classic ./matter-bridge-tapo-party-demo_0.1_amd64.sna
 sudo nano /var/snap/matter-bridge-tapo-party-demo/current/config.json
 ```
 
+In the configuration file, the endpoint numbers 1 to 4 correspond to the matter endpoints, which can be passed to the `chip-tool` to control the devices. 
+
 <!--
 # Connect interfaces
 ```
@@ -59,3 +61,10 @@ chip-tool onoff on 110 1
 chip-tool onoff off 110 1
 chip-tool onoff toggle 110 1
 ```
+
+where:
+
+- `onoff` is the matter cluster name
+- `on`/`off`/`toggle` is the command name. The `toggle` command is RECOMMENDED because it is stateless. 
+- `110` is the node id of the bridge app assigned during the commissioning
+- `1` is the endpoint of the configured device
