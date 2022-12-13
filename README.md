@@ -1,5 +1,11 @@
 # Tapo Matter Bridge
 
+## Install dependencies of the classic snap
+```
+sudo apt update
+sudo apt install alsa mpg123
+```
+
 ## Install
 ```
 snap install --dangerous --classic ./matter-bridge-tapo-party-demo_0.1_amd64.snap
@@ -7,7 +13,7 @@ snap install --dangerous --classic ./matter-bridge-tapo-party-demo_0.1_amd64.sna
 
 ## Configure
 ```
-sudo nano /var/snap/lighting-tapo/current/config.json
+sudo nano /var/snap/matter-bridge-tapo-party-demo/current/config.json
 ```
 
 <!--
@@ -19,8 +25,8 @@ snap connect matter-bridge-tapo-party-demo:avahi-control
 
 ## Run
 ```
-snap start lighting-tapo
-snap logs -f lighting-tapo
+sudo snap start matter-bridge-tapo-party-demo
+sudo snap logs -f matter-bridge-tapo-party-demo
 ```
 
 
