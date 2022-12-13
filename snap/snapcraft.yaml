@@ -85,13 +85,6 @@ parts:
     after: [connectedhomeip]
     plugin: dump
     source: .
-    # plugin: python
-    # source: .
-    # python-requirements: requirements.txt
-    # python-packages:
-    #   - PyP100
-    # build-packages:
-    #   - python3-pip
     override-build: |
       mkdir -p $CRAFT_PART_INSTALL/bin $CRAFT_PART_INSTALL/etc
       cp run.sh $CRAFT_PART_INSTALL/bin/
@@ -105,7 +98,6 @@ parts:
     stage-packages:
       - python3
       - python3-venv
-      # - python3-pip
       - alsa # playback driver
       - mpg123
 
