@@ -2,13 +2,18 @@
 
 ## Install
 ```
-snap install --dangerous --devmode ./lighting-tapo_0.1_amd64.snap
+#snap install --devmode ./lighting-tapo_0.1_amd64.snap
+snap install --dangerous --classic ./matter-bridge-tapo-party-demo_0.1_amd64.snap
 ```
 
 ## Configure
 ```
-sudo cp /snap/lighting-tapo/current/etc/config.json.example /var/snap/lighting-tapo/current/config.json
-sudo cp /snap/lighting-tapo/current/etc/disco.mp3 /var/snap/lighting-tapo/current/
+sudo nano /var/snap/lighting-tapo/current/config.json
+```
+
+# Connect interfaces
+```
+snap connect matter-bridge-tapo-party-demo:avahi-control
 ```
 
 ## Run

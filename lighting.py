@@ -35,7 +35,8 @@ partyOn = None
 partyThread = None
 endpoints = []
 defaults = None
-workDir = os.getenv('WORK_DIR')
+envAudioFilePath = os.getenv('AUDIO_FILE')
+envConfFilePath = os.getenv('CONF_FILE')
 
 
 def switch_on(dev: dict):
@@ -106,10 +107,10 @@ def party():
         set_level(b, defaults['brightness'])
 
     # play the music
-    audioFile = party['audioFile']
-    if workDir:
-        audioFile = workDir+audioFile
-    musicProc = subprocess.Popen(["mpg123", audioFile])
+    audioFile = party['audioFile']  # from config file
+    if envAudioFilePath:
+        audioFile = envAudioFilePath  # from env var
+    musicProc = subprocess.Popen(['mpg123', audioFile])
     delay = party['transitionDelay']
 
     while partyOn:
@@ -185,19 +186,23 @@ class Lighting:
 
 
 if __name__ == "__main__":
-    confFile = open("config.json")
+    print("Starting Tapo Bridge Lighting App")
+
+    confFilePath = "config.json"
+    if envConfFilePath:
+        confFilePath = envConfFilePath
+    confFile = open(confFilePath)
     conf = json.load(confFile)
     confFile.close()
 
     endpoints = conf['endpoints']
     defaults = conf['defaults']
 
-    l = Lighting()
-
-    print("Starting Tapo Bridge Lighting App")
-
     user = conf['tplinkUsername']
     password = conf['tplinkPassword']
+    if not user or not password:
+        print("TP-Link account username or password is unset!")
+        quit(1)
     for id, device in endpoints.items():
         type = device['type']
         match type:
@@ -232,5 +237,7 @@ if __name__ == "__main__":
                 print('ERROR: Unknown device type:', type)
                 quit(1)
 
-    print('Ready...')
+    l = Lighting()
+
+    print('🚀 Ready...')
     Event().wait()

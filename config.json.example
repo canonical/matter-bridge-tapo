@@ -1,5 +1,5 @@
 {
-    "tplinkUsername": "email@example.com",
+    "tplinkUsername": "",
     "tplinkPassword": "",
     "defaults": {
         "brightness": 100,

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp $SNAP/etc/config.json.example $SNAP_DATA/config.json
