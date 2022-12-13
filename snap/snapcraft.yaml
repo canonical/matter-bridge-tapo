@@ -23,7 +23,14 @@ layout:
   #   bind: $SNAP/etc/alsa
 
 parts:
+  build-res:
+    plugin: dump
+    source: .
+    override-build: |
+      cp zap_lighting_endpoint_config.h $CRAFT_STAGE/
+      cp requirements.txt $CRAFT_STAGE/
   connectedhomeip:
+    after: [build-res]
     plugin: nil
     override-build: |   
       git clone https://github.com/project-chip/connectedhomeip.git --depth=1 .
@@ -40,7 +47,7 @@ parts:
       source scripts/activate.sh
 
       # Replace lighting app headers to have additional endpoints
-      cp $SNAPCRAFT_PROJECT_DIR/zap_lighting_endpoint_config.h \
+      cp $CRAFT_STAGE/zap_lighting_endpoint_config.h \
         zzz_generated/lighting-app/zap-generated/endpoint_config.h
 
       # Python setup
@@ -48,7 +55,7 @@ parts:
       source out/python_env/bin/activate
 
       # This is needed for the bridge. Install it here since the venv is active.
-      pip install -r $SNAPCRAFT_PROJECT_DIR/requirements.txt
+      pip install -r $CRAFT_STAGE/requirements.txt
 
       sed 's/^VIRTUAL_ENV=.*/VIRTUAL_ENV="\$SNAP\/connectedhomeip\/python_env"/' \
         out/python_env/bin/activate > out/python_env/bin/activate_snap
