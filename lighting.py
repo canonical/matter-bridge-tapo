@@ -156,7 +156,8 @@ def attributeChangeCallback(
 
                 print("[callback] off")
                 switch_off(dev)
-
+        elif clusterId == 8 and attributeId == 0:
+            print("[callback] Ignoring level control command.")
         else:
             print("[callback] Error: unhandled cluster {} or attribute {}".format(
                 clusterId, attributeId))
