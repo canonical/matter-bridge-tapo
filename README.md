@@ -57,14 +57,16 @@ chip-tool pairing onnetwork 110 20202021
 Switching on/off:
 
 ```bash
+chip-tool onoff toggle 110 1 # toggle is stateless and recommended
 chip-tool onoff on 110 1
 chip-tool onoff off 110 1
-chip-tool onoff toggle 110 1
 ```
 
 where:
 
-- `onoff` is the matter cluster name
-- `on`/`off`/`toggle` is the command name. The `toggle` command is RECOMMENDED because it is stateless. 
-- `110` is the node id of the bridge app assigned during the commissioning
-- `1` is the endpoint of the configured device
+-   `onoff` is the matter cluster name
+-   `on`/`off`/`toggle` is the command name. The `toggle` command is RECOMMENDED
+    because it is stateless. The bridge does not synchronize the actual state of
+    devices.
+-   `110` is the node id of the bridge app assigned during the commissioning
+-   `1` is the endpoint of the configured device
