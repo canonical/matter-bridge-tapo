@@ -1,5 +1,5 @@
-name: matter-bridge-tapo-l530
-version: "0.1"
+name: matter-bridge-tapo-lighting
+version: git
 summary: Matter Bridge for Tapo L530E multi-color light bulb
 description: |
   This is year 2022 and TP-Link Tapo devices aren't yet Matter-ready.
