@@ -31,6 +31,9 @@ import os
 
 from PyP100 import PyL530
 
+import struct
+import math
+
 dev = None
 dev_state = None
 switchedOn = None
@@ -103,6 +106,10 @@ def attributeChangeCallback(
     size: int,
     value: bytes,
 ):
+    
+    # convert bytes to little-endian unsigned integer
+    value = struct.unpack("<I", value)[0]
+
     if endpoint == 1:
         print("[callback] cluster={} attr={} value={}".format(
             clusterId, attributeId, list(value)))
@@ -119,7 +126,8 @@ def attributeChangeCallback(
         elif clusterId == 8 and attributeId == 0:
             if value:
                 print("[callback] level {}".format(value[0]))
-                set_level(value[0])
+                tapoLevel = math.trunc(value[0] * (100/254))
+                set_level(tapoLevel)
         # color
         elif clusterId == 768:
             if value:
@@ -127,11 +135,13 @@ def attributeChangeCallback(
                 # hue
                 if attributeId == 0:
                     print("[callback] color hue={}".format(value[0]))
-                    set_hue(value[0])
+                    tapoHue = math.trunc(value[0] * (359/254))
+                    set_hue(tapoHue)
                 # saturation
                 elif attributeId == 1:
                     print("[callback] color saturation={}".format(value[0]))
-                    set_saturation(value[0])
+                    tapoSaturation = math.trunc(value[0] * (100/254))
+                    set_saturation(tapoSaturation)
                 # temperature
                 elif attributeId == 7:
                     print("[callback] color temperature={}".format(value[0]))
