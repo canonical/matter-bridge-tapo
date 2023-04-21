@@ -31,7 +31,6 @@ import os
 
 from PyP100 import PyL530
 
-import struct
 import math
 
 dev = None
@@ -106,8 +105,6 @@ def attributeChangeCallback(
     size: int,
     value: bytes,
 ):
-    
-
     if endpoint == 1:
         print("[callback] cluster={} attr={} value={}".format(
             clusterId, attributeId, list(value)))
