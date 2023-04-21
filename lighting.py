@@ -105,6 +105,9 @@ def attributeChangeCallback(
     size: int,
     value: bytes,
 ):
+    if not value:
+        value = bytes([0])
+
     if endpoint == 1:
         print("[callback] cluster={} attr={} value={}".format(
             clusterId, attributeId, list(value)))
