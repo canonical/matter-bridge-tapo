@@ -63,7 +63,7 @@ def set_level(level: int):
     # The level setting is stored and resubmitted with every on/off command.
     # Skip when off or unknown, because setting level turns on the Tapo light.
     if switchedOn or switchedOn is None:
-        print("[tapo] {}: set brightness level".format(dev.ipAddress))
+        print("[tapo] {}: set brightness level {}".format(dev.ipAddress, level))
         dev.setBrightness(level)
 
 
@@ -120,8 +120,8 @@ def attributeChangeCallback(
         # level (brightness)
         elif clusterId == 8 and attributeId == 0:
             if value:
-                print("[callback] level {}".format(value[0]))
-                set_level(math.trunc(value * (100/254)))
+                print("[callback] level={}".format(value[0]))
+                set_level(math.trunc(value[0] * (100/254)))
         # color
         elif clusterId == 768:
             if value:
