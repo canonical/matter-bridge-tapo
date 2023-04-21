@@ -92,7 +92,7 @@ def set_saturation(saturation: int):
 def set_color_temperature(kelvin: int):
     global dev
 
-    print("[tapo] {}: set color temperature".format(dev.ipAddress))
+    print("[tapo] {}: set color temperature {}".format(dev.ipAddress, kelvin))
     dev.setColorTemp(kelvin)
 
 
@@ -139,8 +139,14 @@ def attributeChangeCallback(
                     set_saturation(math.trunc(value[0] * (100/254)))
                 # temperature
                 elif attributeId == 7:
-                    print("[callback] color temperature={}".format(value[0]))
-                    set_color_temperature(value[0])
+                    # extract and convert input of temperature from bytes 
+                    # to little-endian unsigned integer to accept wider input value
+                    value_list = value[:2]
+                    value_string = bytes(value_list)
+                    value = int.from_bytes(value_string, byteorder='little')
+
+                    print("[callback] color temperature={}".format(value))
+                    set_color_temperature(math.trunc(1000000/value))
 
         else:
             print("[callback] Error: unhandled cluster {} or attribute {}".format(

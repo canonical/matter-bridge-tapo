@@ -30,7 +30,7 @@ parts:
     after: [build-res]
     plugin: nil
     override-build: |   
-      git clone https://github.com/project-chip/connectedhomeip.git --depth=1 .
+      git clone https://github.com/project-chip/connectedhomeip.git --depth=1 --branch=v1.0.0.2 .
       scripts/checkout_submodules.py --shallow --platform linux
 
       # The project writes its data to /tmp. Snap does not allow bind mounting
