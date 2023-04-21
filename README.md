@@ -123,7 +123,7 @@ sudo apt install git gcc g++ libdbus-1-dev \
 
 Shallow clone the Connected Home IP project:
 ```bash
-git clone https://github.com/project-chip/connectedhomeip.git --depth=1
+git clone https://github.com/project-chip/connectedhomeip.git --depth=1 --branch=v1.0.0.2
 cd ~/connectedhomeip/
 scripts/checkout_submodules.py --shallow --platform linux
 ```

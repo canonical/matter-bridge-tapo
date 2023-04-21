@@ -31,6 +31,8 @@ import os
 
 from PyP100 import PyL530
 
+import math
+
 dev = None
 dev_state = None
 switchedOn = None
@@ -61,7 +63,7 @@ def set_level(level: int):
     # The level setting is stored and resubmitted with every on/off command.
     # Skip when off or unknown, because setting level turns on the Tapo light.
     if switchedOn or switchedOn is None:
-        print("[tapo] {}: set brightness level".format(dev.ipAddress))
+        print("[tapo] {}: set brightness level {}".format(dev.ipAddress, level))
         dev.setBrightness(level)
 
 
@@ -103,6 +105,9 @@ def attributeChangeCallback(
     size: int,
     value: bytes,
 ):
+    if not value:
+        value = bytes([0])
+
     if endpoint == 1:
         print("[callback] cluster={} attr={} value={}".format(
             clusterId, attributeId, list(value)))
@@ -118,8 +123,8 @@ def attributeChangeCallback(
         # level (brightness)
         elif clusterId == 8 and attributeId == 0:
             if value:
-                print("[callback] level {}".format(value[0]))
-                set_level(value[0])
+                print("[callback] level={}".format(value[0]))
+                set_level(math.trunc(value[0] * (100/254)))
         # color
         elif clusterId == 768:
             if value:
@@ -127,11 +132,11 @@ def attributeChangeCallback(
                 # hue
                 if attributeId == 0:
                     print("[callback] color hue={}".format(value[0]))
-                    set_hue(value[0])
+                    set_hue(math.trunc(value[0] * (359/254)))
                 # saturation
                 elif attributeId == 1:
                     print("[callback] color saturation={}".format(value[0]))
-                    set_saturation(value[0])
+                    set_saturation(math.trunc(value[0] * (100/254)))
                 # temperature
                 elif attributeId == 7:
                     print("[callback] color temperature={}".format(value[0]))
