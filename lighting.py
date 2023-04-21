@@ -107,8 +107,6 @@ def attributeChangeCallback(
     value: bytes,
 ):
     
-    # convert bytes to little-endian unsigned integer
-    value = struct.unpack("<I", value)[0]
 
     if endpoint == 1:
         print("[callback] cluster={} attr={} value={}".format(
@@ -126,8 +124,7 @@ def attributeChangeCallback(
         elif clusterId == 8 and attributeId == 0:
             if value:
                 print("[callback] level {}".format(value[0]))
-                tapoLevel = math.trunc(value[0] * (100/254))
-                set_level(tapoLevel)
+                set_level(math.trunc(value * (100/254)))
         # color
         elif clusterId == 768:
             if value:
@@ -135,13 +132,11 @@ def attributeChangeCallback(
                 # hue
                 if attributeId == 0:
                     print("[callback] color hue={}".format(value[0]))
-                    tapoHue = math.trunc(value[0] * (359/254))
-                    set_hue(tapoHue)
+                    set_hue(math.trunc(value[0] * (359/254)))
                 # saturation
                 elif attributeId == 1:
                     print("[callback] color saturation={}".format(value[0]))
-                    tapoSaturation = math.trunc(value[0] * (100/254))
-                    set_saturation(tapoSaturation)
+                    set_saturation(math.trunc(value[0] * (100/254)))
                 # temperature
                 elif attributeId == 7:
                     print("[callback] color temperature={}".format(value[0]))
