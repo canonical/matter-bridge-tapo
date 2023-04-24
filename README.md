@@ -8,18 +8,18 @@ The bridge communicates with a single, pre-commissioned Tapo device over WiFi.
 ### Build and install
 ```bash
 snapcraft -v
-snap install --dangerous ./matter-bridge-tapo-l530_0.1_amd64.snap
+snap install --dangerous <snap-file>
 ```
 ### Configure
 ```bash
-snap set matter-bridge-tapo-l530 ip="tapo device ip"
-snap set matter-bridge-tapo-l530 user="tapo user"
-snap set matter-bridge-tapo-l530 password="tapo password"
+snap set matter-bridge-tapo-lighting ip="tapo device ip"
+snap set matter-bridge-tapo-lighting user="tapo user"
+snap set matter-bridge-tapo-lighting password="tapo password"
 ```
 
 ### Connect interfaces
 ```bash
-snap connect matter-bridge-tapo-l530:avahi-control
+snap connect matter-bridge-tapo-lighting:avahi-control
 ```
 
 The [avahi-control](https://snapcraft.io/docs/avahi-control-interface) is necessary to allow discovery of the application via DNS-SD.
@@ -27,8 +27,8 @@ To make this work, the host also needs to have a running avahi-daemon which can 
 
 ### Run
 ```bash
-sudo snap start matter-bridge-tapo-l530
-sudo snap logs -f matter-bridge-tapo-l530
+sudo snap start matter-bridge-tapo-lighting
+sudo snap logs -f matter-bridge-tapo-lighting
 ```
 
 ## Native
