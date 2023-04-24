@@ -92,19 +92,20 @@ where:
 
 Level (brightness) control:
 ```bash
-chip-tool levelcontrol move-to-level 100 0 0 0 110 1
+# set max brightness
+chip-tool levelcontrol move-to-level 254 0 0 0 110 1
 ```
 
 Color control:
 ```bash
-# hue
+# hue (0-254)
 chip-tool colorcontrol move-to-hue 50 0 0 0 0 110 1
-# saturation
+# saturation (0-254)
 chip-tool colorcontrol move-to-saturation 60 0 0 0 110 1
 # hue + saturation
 chip-tool colorcontrol move-to-hue-and-saturation 50 60 0 0 0 110 1
 
-# color temperature
+# color temperature (mired)
 chip-tool colorcontrol move-to-color-temperature 400 0 0 0 110 1
 ```
 
