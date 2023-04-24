@@ -86,24 +86,31 @@ where:
 -   `110` is the node id of the bridge app assigned during the commissioning
 -   `1` is the endpoint of the configured device
 
-Level control:
+Level (brightness) control:
 ```bash
 chip-tool levelcontrol move-to-level 100 0 0 0 110 1
 ```
 
 Color control:
 ```bash
+# hue
 chip-tool colorcontrol move-to-hue 50 0 0 0 0 110 1
+# saturation
 chip-tool colorcontrol move-to-saturation 60 0 0 0 110 1
+# hue + saturation
 chip-tool colorcontrol move-to-hue-and-saturation 50 60 0 0 0 110 1
+
+# color temperature
+chip-tool colorcontrol move-to-color-temperature 400 0 0 0 110 1
 ```
 
-<!--
-Color temperature:
-```bash
-chip-tool colorcontrol move-to-color-temperature 3000 0 0 0 110 1
-```
--->
+Supported range of values:
+| Parameter | Matter range | Tapo range |
+|-----------|--------------|------------|
+| Hue | 0-254 | 0-359 |
+| Saturation| 0-254 | 0-100 |
+| Brightness/Level| [3-254](https://github.com/farshidtz/matter-bridge-tapo/issues/4) | 1-100 |
+| Color temperature | 400-154 mireds | 2500-6500 kelvins |
 
 ## Development
 
