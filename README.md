@@ -1,9 +1,13 @@
 # Tapo Matter Bridge
+[![matter-bridge-tapo-lighting](https://snapcraft.io/matter-bridge-tapo-lighting/badge.svg)](https://snapcraft.io/matter-bridge-tapo-lighting)
+
 This is year 2022 and TP-Link Tapo devices aren't yet Matter-ready.
 
 This app is a Matter bridge which can be used to turn the Tapo L530E into a Matter device.
 
 The bridge communicates with a single, pre-commissioned Tapo device over WiFi.
+
+The app uses the [PyP100](https://pypi.org/project/PyP100/) library and can be extended for controlling other TP-Link Tapo devices including the P100, P105, P110 plugs and the L530 bulb.
 ## Snap
 ### Build and install
 ```bash
