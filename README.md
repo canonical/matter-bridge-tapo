@@ -113,7 +113,7 @@ Supported range of values:
 |-----------|--------------|------------|
 | Hue | 0-254 | 0-359 |
 | Saturation| 0-254 | 0-100 |
-| Brightness/Level| [3-254](https://github.com/farshidtz/matter-bridge-tapo/issues/4) | 1-100 |
+| Brightness/Level| [3-254](https://github.com/canonical/matter-bridge-tapo/issues/4) | 1-100 |
 | Color temperature | 400-154 mireds | 2500-6500 kelvins |
 
 ## Development
