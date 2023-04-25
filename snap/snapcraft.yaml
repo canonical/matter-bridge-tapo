@@ -1,12 +1,7 @@
 name: matter-bridge-tapo-lighting
 version: git
 summary: Matter Bridge for Tapo L530E multi-color light bulb
-description: |
-  This is year 2022 and TP-Link Tapo devices aren't yet Matter-ready.
-
-  This app is a Matter bridge which can be used to turn the Tapo L530E into a Matter device.
-
-  The bridge communicates with a single, pre-commissioned Tapo device over WiFi.
+description: Refer to https://snapcraft.io/matter-bridge-tapo-lighting
 license: Apache-2.0
 confinement: strict
 base: core22

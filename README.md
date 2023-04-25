@@ -1,25 +1,29 @@
 # Tapo Matter Bridge
+[![matter-bridge-tapo-lighting](https://snapcraft.io/matter-bridge-tapo-lighting/badge.svg)](https://snapcraft.io/matter-bridge-tapo-lighting)
+
 This is year 2022 and TP-Link Tapo devices aren't yet Matter-ready.
 
 This app is a Matter bridge which can be used to turn the Tapo L530E into a Matter device.
 
 The bridge communicates with a single, pre-commissioned Tapo device over WiFi.
+
+The app uses the [PyP100](https://pypi.org/project/PyP100/) library and can be extended for controlling other TP-Link Tapo devices including the P100, P105, P110 plugs and the L530 bulb.
 ## Snap
 ### Build and install
 ```bash
 snapcraft -v
-snap install --dangerous ./matter-bridge-tapo-l530_0.1_amd64.snap
+snap install --dangerous <snap-file>
 ```
 ### Configure
 ```bash
-snap set matter-bridge-tapo-l530 ip="tapo device ip"
-snap set matter-bridge-tapo-l530 user="tapo user"
-snap set matter-bridge-tapo-l530 password="tapo password"
+snap set matter-bridge-tapo-lighting ip="tapo device ip"
+snap set matter-bridge-tapo-lighting user="tapo user"
+snap set matter-bridge-tapo-lighting password="tapo password"
 ```
 
 ### Connect interfaces
 ```bash
-snap connect matter-bridge-tapo-l530:avahi-control
+snap connect matter-bridge-tapo-lighting:avahi-control
 ```
 
 The [avahi-control](https://snapcraft.io/docs/avahi-control-interface) is necessary to allow discovery of the application via DNS-SD.
@@ -27,8 +31,8 @@ To make this work, the host also needs to have a running avahi-daemon which can 
 
 ### Run
 ```bash
-sudo snap start matter-bridge-tapo-l530
-sudo snap logs -f matter-bridge-tapo-l530
+sudo snap start matter-bridge-tapo-lighting
+sudo snap logs -f matter-bridge-tapo-lighting
 ```
 
 ## Native
@@ -86,24 +90,32 @@ where:
 -   `110` is the node id of the bridge app assigned during the commissioning
 -   `1` is the endpoint of the configured device
 
-Level control:
+Level (brightness) control:
 ```bash
-chip-tool levelcontrol move-to-level 100 0 0 0 110 1
+# set max brightness
+chip-tool levelcontrol move-to-level 254 0 0 0 110 1
 ```
 
 Color control:
 ```bash
+# hue (0-254)
 chip-tool colorcontrol move-to-hue 50 0 0 0 0 110 1
+# saturation (0-254)
 chip-tool colorcontrol move-to-saturation 60 0 0 0 110 1
+# hue + saturation
 chip-tool colorcontrol move-to-hue-and-saturation 50 60 0 0 0 110 1
+
+# color temperature (mired)
+chip-tool colorcontrol move-to-color-temperature 400 0 0 0 110 1
 ```
 
-<!--
-Color temperature:
-```bash
-chip-tool colorcontrol move-to-color-temperature 3000 0 0 0 110 1
-```
--->
+Supported range of values:
+| Parameter | Matter range | Tapo range |
+|-----------|--------------|------------|
+| Hue | 0-254 | 0-359 |
+| Saturation| 0-254 | 0-100 |
+| Brightness/Level| [3-254](https://github.com/canonical/matter-bridge-tapo/issues/4) | 1-100 |
+| Color temperature | 400-154 mireds | 2500-6500 kelvins |
 
 ## Development
 
