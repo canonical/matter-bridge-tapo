@@ -54,22 +54,13 @@ IP="tapo device IP" USER="tapo user" PASSWORD="tapo password" python lighting.py
 ### Commissioning
 
 ```bash
-chip-tool pairing ethernet 110 20202021 3840 192.168.1.111 5540
+chip-tool pairing onnetwork 110 20202021
 ```
 
 where:
 
 -   `110` is the assigned node id
 -   `20202021` is the pin code for the bridge app
--   `3840` is the discriminator id
--   `192.168.1.111` is the IP address of the host for the bridge
--   `5540` the the port for the bridge
-
-Alternatively, to commission with discovery which works with DNS-SD:
-
-```bash
-chip-tool pairing onnetwork 110 20202021
-```
 
 ### Command
 
